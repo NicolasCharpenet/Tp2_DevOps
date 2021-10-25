@@ -15,7 +15,7 @@ jobs:
     - name: Set up JDK 11 
       uses: joschi/setup-jdk@v2
       with: 
-       java-version: '1.8'
+       java-version: '11'
     - name: Ajout credentials to Docker Hub
       uses: docker/login-action@v1
       with:
