@@ -4,9 +4,10 @@ name: CI devops 2021 EPF
 on:
   #to begin you want to launch this job in main and develop
   push:
-    branches: main
+    branches: develop
   pull_request:
 jobs:
+
  build-and-test-app:
     runs-on: ubuntu-18.04
     steps:
@@ -15,7 +16,42 @@ jobs:
       uses: joschi/setup-jdk@v2
       with: 
        java-version: '11'
-      
+    - name: Ajout credentials to Docker Hub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+        
+ build-and-push-docker-image:
+  needs: build-and-test-app 
+  runs-on: ubuntu-18.04
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Login to Docker Hub
+      run: docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{secrets.DOCKERHUB_TOKEN }}  
+    - name: Build image and push backend
+      uses: docker/build-push-action@v2
+      with:
+       context: ./simple-api
+       tags:
+        ${{secrets.DOCKERHUB_USERNAME}}/tp-devops-epf:simple-api
+       push: ${{ github.ref == 'refs/heads/main' }}
+    - name: Build image and push database
+      uses: docker/build-push-action@v2
+      with:
+       context: ./database
+       tags:
+        ${{secrets.DOCKERHUB_USERNAME}}/tp-devops-epf:database
+       push: ${{ github.ref == 'refs/heads/main' }} 
+    - name: Build image and push httpd
+      uses: docker/build-push-action@v2
+      with:
+       context: ./httpd
+       tags:
+        ${{secrets.DOCKERHUB_USERNAME}}/tp-devops-epf:httpd
+       push: ${{ github.ref == 'refs/heads/main' }} 
+    
     #finally build your app with the latest command
     - name: Build and test with Maven
       run:  mvn -B package --file simple-api/pom.xml 
