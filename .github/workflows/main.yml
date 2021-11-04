@@ -21,7 +21,19 @@ jobs:
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
-        
+    - name: Cache SonarCloud packages
+      uses: actions/cache@v1
+      with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+    - name: Cache Maven packages
+      uses: actions/cache@v1
+      with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+          
  build-and-push-docker-image:
   needs: build-and-test-app 
   runs-on: ubuntu-18.04
@@ -53,5 +65,8 @@ jobs:
        push: ${{ github.ref == 'refs/heads/main' }} 
     
     #finally build your app with the latest command
-    - name: Build and test with Maven
-      run:  mvn -B package --file simple-api/pom.xml 
+    - name: Build and analyse
+      env:
+        SONAR_TOKEN : ${{ secrets.SONAR_TOKEN }}
+      run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=NicolasCharpenet_Tp2_DevOps
+    
