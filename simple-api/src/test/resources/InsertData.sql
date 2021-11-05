@@ -29,6 +29,7 @@ VALUES ('ASI'),
 
 INSERT INTO students (first_name, last_name, department_id)
 VALUES ('Gautier', 'Darchen', 1),
+       ('Nicolas', 'Charpe', 1), 
        ('Jonathan', 'Le Bloas', 1),
        ('Franck', 'Bolduc', 1),
        ('Gaston', 'Lagaffe', 2),
