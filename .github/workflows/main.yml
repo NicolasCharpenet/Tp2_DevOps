@@ -22,7 +22,6 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
     - name: Cache SonarCloud packages
-      env: GITHUB_TOKEN:${{secrets.TOKEN_GITHUB}}
       run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=NicolasCharpenet_Tp2_DevOps -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{secrets.SONAR_TOKEN }} --file ./simple-api/pom.xml
     - name: Cache Maven packages
       uses: actions/cache@v1
