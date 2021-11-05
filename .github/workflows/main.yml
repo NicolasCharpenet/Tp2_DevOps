@@ -63,8 +63,5 @@ jobs:
        push: ${{ github.ref == 'refs/heads/main' }} 
     
     #finally build your app with the latest command
-    - name: Build and analyse
-      env:
-        SONAR_TOKEN : ${{ secrets.SONAR_TOKEN }}
-      run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=NicolasCharpenet_Tp2_DevOps
-    
+    - name: Build and test with Maven
+      run:  mvn -B package --file simple-api/pom.xml 
